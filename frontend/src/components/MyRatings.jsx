@@ -2,13 +2,20 @@ import React, { useState, useEffect } from 'react';
 
 function MyRatings() {
   const [ratings, setRatings] = useState([]);
+  const [originalRatings, setOriginalRatings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saveStatus, setSaveStatus] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     fetchUserRatings();
   }, []);
+
+  useEffect(() => {
+    const hasModifications = JSON.stringify(ratings) !== JSON.stringify(originalRatings);
+    setHasChanges(hasModifications);
+  }, [ratings, originalRatings]);
 
   const fetchUserRatings = async () => {
     try {
@@ -17,7 +24,9 @@ function MyRatings() {
       if (!response.ok) throw new Error('Failed to fetch ratings');
       
       const data = await response.json();
-      setRatings(data.ratings || []);
+      const fetchedRatings = data.ratings || [];
+      setRatings(fetchedRatings);
+      setOriginalRatings(JSON.parse(JSON.stringify(fetchedRatings)));
       setLoading(false);
     } catch (err) {
       setError('Failed to load your ratings');
@@ -32,7 +41,7 @@ function MyRatings() {
   const handleRatingChange = (ratingId, newScore) => {
     setRatings(ratings.map((rating) => {
       if (rating.id === ratingId) {
-        return { ...rating, score: parseInt(newScore, 10) };
+        return { ...rating, score: parseInt(newScore, 10) || 1 };
       }
       return rating;
     }));
@@ -49,6 +58,8 @@ function MyRatings() {
 
   const handleSaveChanges = async () => {
     try {
+      setSaveStatus({ success: true, message: 'Saving changes...' });
+      
       const response = await fetch('/api/ratings/update', {
         method: 'POST',
         headers: {
@@ -62,14 +73,20 @@ function MyRatings() {
       const data = await response.json();
       setSaveStatus({ success: true, message: data.message || 'Changes saved successfully' });
       
-      // Refresh ratings from server
-      fetchUserRatings();
+      // Update original ratings to match current state
+      setOriginalRatings(JSON.parse(JSON.stringify(ratings)));
       
       // Clear status after 3 seconds
       setTimeout(() => setSaveStatus(null), 3000);
     } catch (err) {
       setSaveStatus({ success: false, message: 'Failed to save changes' });
     }
+  };
+
+  const handleCancelChanges = () => {
+    setRatings(JSON.parse(JSON.stringify(originalRatings)));
+    setSaveStatus({ success: true, message: 'Changes discarded' });
+    setTimeout(() => setSaveStatus(null), 3000);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -98,6 +115,7 @@ function MyRatings() {
                     type="button"
                     className="delete-btn"
                     onClick={() => handleDeleteRating(rating.id)}
+                    aria-label={`Delete rating for ${rating.movie_title}`}
                   >
                     Delete
                   </button>
@@ -131,9 +149,25 @@ function MyRatings() {
               </div>
             ))}
           </div>
-          <button type="button" className="save-btn" onClick={handleSaveChanges}>
-            Save Changes
-          </button>
+          <div className="actions-container">
+            <button 
+              type="button" 
+              className="save-btn" 
+              onClick={handleSaveChanges}
+              disabled={!hasChanges}
+            >
+              Save Changes
+            </button>
+            {hasChanges && (
+              <button 
+                type="button" 
+                className="cancel-btn" 
+                onClick={handleCancelChanges}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
