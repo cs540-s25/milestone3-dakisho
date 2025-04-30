@@ -1,4 +1,3 @@
-
 import requests
 
 
@@ -14,7 +13,7 @@ def fetch_wikipedia_link(movie_title: str) -> str:
             "action": "query",
             "list": "search",
             "srsearch": movie_title,
-            "format": "json"
+            "format": "json",
         }
         resp = requests.get(base_url, params=params)
         resp.raise_for_status()

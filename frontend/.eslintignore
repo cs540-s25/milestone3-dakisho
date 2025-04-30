@@ -1,0 +1,5 @@
+build/
+node_modules/
+setupTests.js
+reportWebVitals.js
+index.js
