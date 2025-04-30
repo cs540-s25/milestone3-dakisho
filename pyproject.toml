@@ -1,0 +1,24 @@
+[project]
+name = "bigapp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [{ name = "Darin Kishore", email = "darinkishore@protonmail.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.0",
+    "flask-login>=0.6.3",
+    "flask-sqlalchemy>=3.1.1",
+    "gunicorn>=23.0.0",
+    "python-dotenv>=1.0.1",
+    "requests>=2.28.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.5",
+]

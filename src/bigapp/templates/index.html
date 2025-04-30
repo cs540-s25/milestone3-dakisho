@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- palette credit: https://stephango.com/flexoki -->
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Movie Discovery</title>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap">
+  <style>
+    :root {
+      /* Base colors */
+      --paper: #FFFCF0;
+      --bg: #F2F0E5;
+      --bg-2: #E6E4D9;
+      --ui: #DAD8CE;
+      --ui-2: #B7B5AC;
+      --tx: #282726;
+      --tx-2: #6F6E69;
+      --tx-3: #878580;
+
+      /* Accent colors */
+      --blue: #4385BE;
+      --cyan: #3AA99F;
+      --purple: #8B7EC8;
+      --red: #D14D41;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg);
+      color: var(--tx);
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 0;
+      background: linear-gradient(to right, var(--blue), var(--purple));
+      color: var(--paper);
+      margin-bottom: 2rem;
+      border-radius: 0 0 1rem 1rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+
+    .movie-container {
+      display: flex;
+      gap: 3rem;
+      align-items: flex-start;
+      margin: 2rem auto;
+      max-width: 1200px;
+      padding: 0 2rem;
+    }
+
+    .movie-poster {
+      flex-shrink: 0;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(40, 39, 38, 0.1);
+      max-width: 300px;
+      height: auto;
+      transition: transform 0.3s ease;
+      background-color: var(--paper);
+      padding: 0.5rem;
+      border: 1px solid var(--ui);
+    }
+
+    .movie-poster:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(40, 39, 38, 0.15);
+    }
+
+    .movie-info {
+      flex-grow: 1;
+      background-color: var(--paper);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(40, 39, 38, 0.05);
+      border: 1px solid var(--ui);
+    }
+
+    .tagline {
+      font-size: 1.4rem;
+      color: var(--tx-2);
+      margin-bottom: 2rem;
+      line-height: 1.4;
+      font-weight: 400;
+    }
+
+    .genres {
+      background-color: var(--bg-2);
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      display: inline-block;
+      font-size: 1.1rem;
+      border: 1px solid var(--ui);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+      color: var(--tx-3);
+      background-color: var(--paper);
+      border-top: 1px solid var(--ui);
+    }
+
+    .wiki-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--cyan);
+      color: var(--paper);
+      text-decoration: none;
+      border-radius: 2rem;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      border: 1px solid var(--ui);
+    }
+
+    .wiki-link:hover {
+      background-color: var(--blue);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(67, 133, 190, 0.2);
+    }
+
+    .no-wiki {
+      color: var(--tx-3);
+      font-style: italic;
+      display: inline-block;
+      margin-top: 1.5rem;
+    }
+    
+    .rating-form {
+      margin-top: 2rem;
+      background-color: var(--bg-2);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid var(--ui);
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--ui-2);
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    
+    .submit-btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--purple);
+      color: var(--paper);
+      text-decoration: none;
+      border-radius: 2rem;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    
+    .submit-btn:hover {
+      background-color: var(--blue);
+      transform: translateY(-2px);
+    }
+    
+    .ratings-container {
+      margin-top: 2rem;
+    }
+    
+    .rating-item {
+      background-color: var(--paper);
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--ui);
+    }
+    
+    .rating-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .rating-score {
+      font-weight: 600;
+      color: var(--purple);
+      font-size: 1.2rem;
+    }
+    
+    .rating-username {
+      font-weight: 600;
+      color: var(--tx-2);
+    }
+    
+    .rating-comment {
+      color: var(--tx);
+      font-style: italic;
+    }
+    
+    .nav-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--paper);
+      border-bottom: 1px solid var(--ui);
+    }
+    
+    .nav-links a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    
+    .welcome-text {
+      color: var(--tx-2);
+    }
+    
+    .flash-message {
+      background-color: var(--red);
+      color: var(--paper);
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto 2rem auto;
+      padding: 0.75rem 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .movie-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .movie-poster {
+        max-width: 100%;
+        width: 300px;
+      }
+
+      .movie-info {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="nav-links">
+    <span class="welcome-text">Welcome, {{ current_user.username }}</span>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+  
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash-message">
+      {{ messages[0] }}
+    </div>
+  {% endif %}
+  {% endwith %}
+  
+  <header>
+    <h1>{{ movie_title }}</h1>
+  </header>
+
+  <main>
+    <div class="movie-container">
+      <img src="{{ poster_url }}" alt="Movie Poster" class="movie-poster">
+      <div class="movie-info">
+        <p class="tagline"><em>{{ movie_tagline }}</em></p>
+        <p><span class="genres"><strong>Genres:</strong> {{ movie_genres }}</span></p>
+        <p>
+          {% if wiki_url %}
+          <a href="{{ wiki_url }}" target="_blank" class="wiki-link">Read more on Wikipedia →</a>
+          {% else %}
+          <span class="no-wiki">No Wikipedia page found.</span>
+          {% endif %}
+        </p>
+        
+        <div class="rating-form">
+          <h3>Rate This Movie</h3>
+          <form action="{{ url_for('main.rate_movie') }}" method="POST">
+            <input type="hidden" name="movie_id" value="{{ movie_id }}">
+            <input type="hidden" name="movie_title" value="{{ movie_title }}">
+            
+            <div class="form-group">
+              <label for="score">Your Rating (1-10):</label>
+              <input type="number" id="score" name="score" min="1" max="10" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="comment">Your Comment (optional):</label>
+              <textarea id="comment" name="comment"></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">Submit Rating</button>
+          </form>
+        </div>
+        
+        <div class="ratings-container">
+          <h3>User Ratings & Comments</h3>
+          
+          {% if ratings %}
+            {% for rating in ratings %}
+            <div class="rating-item">
+              <div class="rating-header">
+                <span class="rating-score">{{ rating.score }}/10</span>
+                <span class="rating-username">{{ rating.user.username }}</span>
+              </div>
+              {% if rating.comment %}
+              <p class="rating-comment">{{ rating.comment }}</p>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <p>No ratings yet. Be the first to rate this movie!</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Movie Discovery App</p>
+  </footer>
+</body>
+
+</html>
