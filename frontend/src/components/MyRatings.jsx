@@ -8,21 +8,12 @@ function MyRatings() {
   const [saveStatus, setSaveStatus] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
 
-  useEffect(() => {
-    fetchUserRatings();
-  }, []);
-
-  useEffect(() => {
-    const hasModifications = JSON.stringify(ratings) !== JSON.stringify(originalRatings);
-    setHasChanges(hasModifications);
-  }, [ratings, originalRatings]);
-
   const fetchUserRatings = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/ratings');
       if (!response.ok) throw new Error('Failed to fetch ratings');
-      
+
       const data = await response.json();
       const fetchedRatings = data.ratings || [];
       setRatings(fetchedRatings);
@@ -33,6 +24,15 @@ function MyRatings() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUserRatings();
+  }, []);
+
+  useEffect(() => {
+    const hasModifications = JSON.stringify(ratings) !== JSON.stringify(originalRatings);
+    setHasChanges(hasModifications);
+  }, [ratings, originalRatings]);
 
   const handleDeleteRating = (ratingId) => {
     setRatings(ratings.filter((rating) => rating.id !== ratingId));
@@ -59,7 +59,7 @@ function MyRatings() {
   const handleSaveChanges = async () => {
     try {
       setSaveStatus({ success: true, message: 'Saving changes...' });
-      
+
       const response = await fetch('/api/ratings/update', {
         method: 'POST',
         headers: {
@@ -69,13 +69,13 @@ function MyRatings() {
       });
 
       if (!response.ok) throw new Error('Failed to save changes');
-      
+
       const data = await response.json();
       setSaveStatus({ success: true, message: data.message || 'Changes saved successfully' });
-      
+
       // Update original ratings to match current state
       setOriginalRatings(JSON.parse(JSON.stringify(ratings)));
-      
+
       // Clear status after 3 seconds
       setTimeout(() => setSaveStatus(null), 3000);
     } catch (err) {
@@ -95,7 +95,7 @@ function MyRatings() {
   return (
     <div className="my-ratings-container">
       <h1>My Movie Ratings</h1>
-      
+
       {saveStatus && (
         <div className={`status-message ${saveStatus.success ? 'success' : 'error'}`}>
           {saveStatus.message}
@@ -103,7 +103,7 @@ function MyRatings() {
       )}
 
       {ratings.length === 0 ? (
-        <p>You haven't rated any movies yet.</p>
+        <p>You haven&apos;t rated any movies yet.</p>
       ) : (
         <div>
           <div className="ratings-list">
@@ -150,18 +150,18 @@ function MyRatings() {
             ))}
           </div>
           <div className="actions-container">
-            <button 
-              type="button" 
-              className="save-btn" 
+            <button
+              type="button"
+              className="save-btn"
               onClick={handleSaveChanges}
               disabled={!hasChanges}
             >
               Save Changes
             </button>
             {hasChanges && (
-              <button 
-                type="button" 
-                className="cancel-btn" 
+              <button
+                type="button"
+                className="cancel-btn"
                 onClick={handleCancelChanges}
               >
                 Cancel

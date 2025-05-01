@@ -1,10 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, {
+  useState,
+  useEffect,
+} from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Movie from './components/Movie';
 import MyRatings from './components/MyRatings';
 import Navbar from './components/Navbar';
+
+// Define ProtectedRoute component outside of App
+// Changed to function declaration to satisfy react/function-component-definition
+function ProtectedRoute({ children, isAuthenticated }) {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  return children;
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,13 +46,6 @@ function App() {
       });
   }, []);
 
-  const ProtectedRoute = ({ children }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/login" />;
-    }
-    return children;
-  };
-
   return (
     <Router>
       <div className="app">
@@ -45,19 +55,19 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/"
-            element={
-              <ProtectedRoute>
+            element={(
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Movie user={user} />
               </ProtectedRoute>
-            }
+            )}
           />
           <Route
             path="/my-ratings"
-            element={
-              <ProtectedRoute>
+            element={(
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <MyRatings user={user} />
               </ProtectedRoute>
-            }
+            )}
           />
         </Routes>
       </div>

@@ -8,20 +8,16 @@ function Movie() {
   const [userComment, setUserComment] = useState('');
   const [allRatings, setAllRatings] = useState([]);
 
-  useEffect(() => {
-    fetchMovie();
-  }, []);
-
   const fetchMovie = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/movie/random');
       if (!response.ok) throw new Error('Failed to fetch movie');
-      
+
       const data = await response.json();
       setMovie(data.movie);
       setAllRatings(data.ratings || []);
-      
+
       // Check if current user has rated this movie
       const userRatingData = data.user_rating;
       if (userRatingData) {
@@ -31,13 +27,17 @@ function Movie() {
         setUserRating('');
         setUserComment('');
       }
-      
+
       setLoading(false);
     } catch (err) {
       setError('Failed to load movie data');
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMovie();
+  }, []);
 
   const handleSubmitRating = async (e) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ function Movie() {
       });
 
       if (!response.ok) throw new Error('Failed to submit rating');
-      
+
       // Refresh movie data
       fetchMovie();
       setError(null);
@@ -80,16 +80,20 @@ function Movie() {
       <div className="movie-details">
         <h1>{movie.title}</h1>
         <p className="tagline">{movie.tagline}</p>
-        <p>Genres: {movie.genres}</p>
-        
+        <p>
+          Genres:
+          {' '}
+          {movie.genres}
+        </p>
+
         {movie.poster_url && (
-          <img 
-            src={movie.poster_url} 
-            alt={`${movie.title} poster`} 
-            className="movie-poster" 
+          <img
+            src={movie.poster_url}
+            alt={`${movie.title} poster`}
+            className="movie-poster"
           />
         )}
-        
+
         {movie.wiki_url && (
           <p>
             <a href={movie.wiki_url} target="_blank" rel="noopener noreferrer">
@@ -139,7 +143,10 @@ function Movie() {
           <ul>
             {allRatings.map((rating) => (
               <li key={rating.id}>
-                <strong>{rating.user_username}</strong>: {rating.score}/10
+                <strong>{rating.user_username}</strong>
+                :
+                {rating.score}
+                /10
                 {rating.comment && <p>{rating.comment}</p>}
               </li>
             ))}
